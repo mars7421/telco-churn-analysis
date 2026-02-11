@@ -190,5 +190,5 @@ streamlit run app/churn_sql_streamlit.py
 - `load_data_from_mysql()` 함수 주석 해제 후 실행  
   
   > 본 프로젝트는 SQL 기반 KPI 정의 → 검증 → 자동화 리포트로 연결되는  
-
   > 실무형 데이터 분석 프로세스를 구현하는 데 목적이 있습니다.
+
