@@ -11,20 +11,13 @@ import platform
 # =========================
 # 한글 설정 (Cloud 호환)
 # =========================
-# Streamlit Cloud 환경이면 Noto Sans CJK 설치
-if platform.system() != "Windows":
-    try:
-        import matplotlib
-        import subprocess
-        subprocess.run(["apt-get", "update"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        subprocess.run(["apt-get", "install", "-y", "fonts-noto-cjk"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        rcParams["font.family"] = "Noto Sans CJK JP"
-    except Exception as e:
-        st.warning(f"Cloud 한글 폰트 설치 실패: {e}")
+if platform.system() == "Windows":
+    rcParams["font.family"] = "Malgun Gothic"  # 윈도우용 안전 폰트
 else:
-    rcParams["font.family"] = "NanumGothic"
+    rcParams["font.family"] = "NanumGothic"    # Cloud/Linux용 안전 폰트
 
 rcParams["axes.unicode_minus"] = False
+
 
 # =========================
 # Page Config
