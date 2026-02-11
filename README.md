@@ -10,7 +10,7 @@
 ---  
   
 ## 프로젝트 구조
-
+```text
 churn_project/
 ├─ app/
 │ └─ churn_sql_streamlit.py # Streamlit 자동화 대시보드
@@ -22,6 +22,7 @@ churn_project/
 ├─ .env # DB 접속 정보 (실무 환경)
 ├─ .gitignore
 └─ requirements.txt  
+```
   
 ---  
   
@@ -36,12 +37,14 @@ churn_project/
 - **실무 가정**: MySQL 운영 DB
 - **포트폴리오 구현**
   - 데이터 변동·권한·재현성 이슈를 고려하여 **CSV 기준 분석**
+  - 분석 결과의 재현성과 리뷰 편의성을 확보하기 위한 포트폴리오 설계 선택
   - MySQL 연결 함수 및 SQL 쿼리는 코드에 구현하여  
     **실무 전환 가능 구조 유지**  
   
 ---  
   
 ## 2️⃣ 분석 흐름 (핵심 사고 구조)
+```text
 운영 DB / SQL  
 ↓  
 EDA (가설 및 변수 식별)  
@@ -50,7 +53,8 @@ SQL 기반 KPI 재정의·검증
 ↓  
 Python 재현  
 ↓  
-Streamlit 자동화 리포트  
+Streamlit 자동화 리포트
+```
   
 ---  
   
@@ -125,14 +129,16 @@ Streamlit 자동화 리포트
   
 ---  
   
-## 5️⃣ 기술 스택  
+## 5️⃣ 기술 스택 및 실무 역량
   
 ### 🛠 사용 기술
 - **Python**: Pandas, Matplotlib, Streamlit
 - **SQL**: MySQL 기반 KPI 정의
-- **환경**: Linux / Windows, dotenv 설정 관리  
+- **OS / Environment**
+  - **Linux 기반 개발 환경** (CLI 기반 실행 및 가상환경 분리 관리)
+- **환경 관리**: dotenv 기반 설정 분리
   
-### ⭐ 기타
+### ⭐ 실무 역량 
 - Python 기반 데이터 분석 경험
 - 데이터 분석을 통한 요금(매출) 관점 해석 경험
 - SQL 기반 KPI 정의 및 검증 경험
@@ -157,5 +163,5 @@ streamlit run app/churn_sql_streamlit.py
 - `.env` 파일에 DB 접속 정보 설정
 - `load_data_from_mysql()` 함수 주석 해제 후 실행  
   
-  > 본 프로젝트는 SQL 기반 KPI 정의 -> 검증 -> 자동화 리포트로 연결되는  
+  > 본 프로젝트는 SQL 기반 KPI 정의 → 검증 → 자동화 리포트로 연결되는  
   > 실무형 데이터 분석 프로세스를 구현하는 데 목적이 있습니다.
