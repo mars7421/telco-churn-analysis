@@ -6,11 +6,24 @@ from matplotlib.ticker import PercentFormatter
 import os
 from sqlalchemy import create_engine
 from dotenv import load_dotenv
+import platform
 
 # =========================
-# 한글 설정
+# 한글 설정 (Cloud 호환)
 # =========================
-rcParams["font.family"] = "NanumGothic"
+# Streamlit Cloud 환경이면 Noto Sans CJK 설치
+if platform.system() != "Windows":
+    try:
+        import matplotlib
+        import subprocess
+        subprocess.run(["apt-get", "update"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        subprocess.run(["apt-get", "install", "-y", "fonts-noto-cjk"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        rcParams["font.family"] = "Noto Sans CJK JP"
+    except Exception as e:
+        st.warning(f"Cloud 한글 폰트 설치 실패: {e}")
+else:
+    rcParams["font.family"] = "NanumGothic"
+
 rcParams["axes.unicode_minus"] = False
 
 # =========================
