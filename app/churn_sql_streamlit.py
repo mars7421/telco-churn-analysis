@@ -123,7 +123,7 @@ menu = st.sidebar.radio(
 # ======================================================
 if menu == 'Overview':
     st.title("📊 Telco Customer Churn Overview")
-    st.caption("MySQL 기반 데이터 → Python 분석 → Streamlit 자동 리포트")
+    st.caption("MySQL 기반 KPI 정의 → Python 재현 → Streamlit 모니터링 리포트")
 
     churn_rate = (df['Churn'] == 'Yes').mean()
 
@@ -295,6 +295,7 @@ elif menu == 'Core Segment':
 # ======================================================
 elif menu == 'Charges Analysis':
     st.title("💰 매출 관점 고객 세그먼트 분석")
+    st.caption("※ 본 분석은 EDA에서 관찰된 요금 패턴을 KPI 관점에서 재확인하는 목적임")
 
     tenure_order = ['0-5개월','6-11개월','12-23개월','24개월 이상']
     fig, ax = plt.subplots()
@@ -356,7 +357,7 @@ elif menu == 'Insight':
 # Appendix
 # ======================================================
 elif menu == 'Appendix (SQL & Validation)':
-    st.title("📎 Appendix: SQL & Data Validation")
+    st.title("📎 Appendix: SAppendix: SQL KPI Definition & Validation")
     st.markdown("""
 ### 🔹 MySQL 기반 핵심 쿼리
 ```sql
