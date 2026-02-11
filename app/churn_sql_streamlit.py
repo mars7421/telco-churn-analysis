@@ -79,13 +79,13 @@ validation = validate_data(df)
 # ======================================================
 def tenure_grouping(x):
     if x < 6:
-        return '0-5개월'
+        return '0-5months'
     elif x < 12:
-        return '6-11개월'
+        return '6-11months'
     elif x < 24:
-        return '12-23개월'
+        return '12-23months'
     else:
-        return '24개월 이상'
+        return '24+ months'
 
 df['tenure_group'] = df['tenure'].apply(tenure_grouping)
 
@@ -274,7 +274,7 @@ elif menu == 'Core Segment':
         aggfunc='count'
     ).reindex(columns=['0-5months','6-11months','12-23months','24+ months'])
 
-    fig, ax = plt.subplots()
+    fig, ax = plt.subplots(constrained_layout=True)
     cax = ax.imshow(pivot_rate.values, cmap='Reds', vmin=0, vmax=1)
 
     ax.set_xticks(range(len(pivot_rate.columns)))
@@ -287,7 +287,7 @@ elif menu == 'Core Segment':
             rate = pivot_rate.iloc[i, j]
             count = pivot_count.iloc[i, j]
             color = 'white' if rate > 0.5 else 'black'
-            ax.text(j, i, f"{rate:.2%}\n({count}명)", ha='center', va='center', color=color)
+            ax.text(j, i, f"{rate:.2%}\n({count} customers)", ha='center', va='center', color=color)
 
     ax.set_title("Fiber optic: Contract × Tenure Churn Rate & Customer Count (%)")
     fig.colorbar(cax, ax=ax, format=PercentFormatter(1.0))
@@ -307,7 +307,7 @@ elif menu == 'Charges Analysis':
     st.caption("매출 관점 고객 세그먼트 분석")
     st.caption("※ 본 분석은 EDA에서 관찰된 요금 패턴을 KPI 관점에서 재확인하는 목적임")
 
-    tenure_order = ['0-5개월','6-11개월','12-23개월','24개월 이상']
+    tenure_order = ['0-5months','6-11months','12-23months','24+ months']
     fig, ax = plt.subplots()
     colors = ['skyblue', 'salmon']
     labels = ['Retained (No)', 'Churned (Yes)']
