@@ -46,9 +46,13 @@ def load_data_from_mysql():
 # ======================================================
 # Load Data (CSV 배포용, 포폴용)
 # ======================================================
+# GitHub raw URL로 CSV 불러오기
+CSV_URL = "https://raw.githubusercontent.com/mars7421/churn_project/main/data/telco_churn.csv"
+
 @st.cache_data(ttl=0)
 def load_data():
-    df = pd.read_csv("../data/telco_churn.csv")
+    df = pd.read_csv(CSV_URL)
+    # TotalCharges 숫자형 변환, 결측치 제거
     df['TotalCharges'] = pd.to_numeric(df['TotalCharges'], errors='coerce')
     df = df.dropna(subset=['TotalCharges']).reset_index(drop=True)
     return df
