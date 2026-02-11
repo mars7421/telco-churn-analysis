@@ -13,13 +13,18 @@
 ```text
 churn_project/
 ├─ app/
-│ └─ churn_sql_streamlit.py # Streamlit 자동화 대시보드
+│ └─ churn_sql_streamlit.py     # Streamlit 자동화 대시보드
 ├─ data/
-│ └─ telco_churn.csv # 포트폴리오용 고정 데이터(CSV)
+│ └─ telco_churn.csv            # 포트폴리오용 고정 데이터(CSV)
 ├─ notebooks/
-│ ├─ pandas_eda.ipynb # 탐색적 데이터 분석 (EDA)
-│ └─ sql_python_analysis.ipynb # SQL + Python 기반 KPI 정의·검증
-├─ .env # DB 접속 정보 (실무 환경)
+│ ├─ pandas_eda.ipynb           # 탐색적 데이터 분석 (EDA)
+│ └─ sql_python_analysis.ipynb  # SQL + Python 기반 KPI 정의·검증
+├── screenshots/
+│ ├─ charges_analysis.png
+│ ├─ churn_heatmap.png
+│ ├─ dashboard_overview.png
+│ └─ insight_action.png
+├─ .env                         # DB 접속 정보 (실무 환경)
 ├─ .gitignore
 └─ requirements.txt  
 ```
