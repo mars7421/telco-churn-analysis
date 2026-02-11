@@ -274,7 +274,7 @@ elif menu == 'Core Segment':
         aggfunc='count'
     ).reindex(columns=['0-5months','6-11months','12-23months','24+ months'])
 
-    fig, ax = plt.subplots(constrained_layout=True)
+    fig, ax = plt.subplots(figsize=(8, 5))
     cax = ax.imshow(pivot_rate.values, cmap='Reds', vmin=0, vmax=1)
 
     ax.set_xticks(range(len(pivot_rate.columns)))
@@ -287,10 +287,15 @@ elif menu == 'Core Segment':
             rate = pivot_rate.iloc[i, j]
             count = pivot_count.iloc[i, j]
             color = 'white' if rate > 0.5 else 'black'
-            ax.text(j, i, f"{rate:.2%}\n({count} customers)", ha='center', va='center', color=color)
+            ax.text(j, i, f"{rate:.2%}\n({count})", ha='center', va='center', color=color)
 
-    ax.set_title("Fiber optic: Contract × Tenure Churn Rate & Customer Count (%)")
-    fig.colorbar(cax, ax=ax, format=PercentFormatter(1.0))
+    fig.suptitle(
+    "Fiber optic: Contract × Tenure Churn Rate & Customer Count",
+    fontsize=13,
+    y=0.98
+    )
+    
+    fig.colorbar(cax, ax=ax, format=PercentFormatter(1.0), fraction=0.046, pad=0.04)
     st.pyplot(fig)
 
     st.markdown("""
