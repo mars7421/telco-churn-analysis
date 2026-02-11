@@ -9,13 +9,8 @@ from dotenv import load_dotenv
 import platform
 
 # =========================
-# 한글 설정 (Cloud 호환)
+# 폰트 설정 (Streamlit Cloud 한글 깨짐 이슈로 영어만 사용)
 # =========================
-if platform.system() == "Windows":
-    rcParams["font.family"] = "Malgun Gothic"  # 윈도우용 안전 폰트
-else:
-    rcParams["font.family"] = "NanumGothic"    # Cloud/Linux용 안전 폰트
-
 rcParams["axes.unicode_minus"] = False
 
 
@@ -163,7 +158,8 @@ if menu == 'Overview':
 # Contract → Churn
 # ======================================================
 elif menu == 'Contract → Churn':
-    st.title("📌 Contract 유형별 이탈률")
+    st.title("📌 Churn Rate by Contract Type")
+    st.caption("Contract 유형별 이탈률")
 
     contract_churn = (
         df.groupby('Contract')['Churn']
@@ -176,7 +172,7 @@ elif menu == 'Contract → Churn':
     ax.set_ylabel('Churn Rate (%)')
     ax.set_ylim(0, 1)
     ax.yaxis.set_major_formatter(PercentFormatter(1.0))
-    ax.set_title("Contract 유형별 고객 이탈률 (단위: %)")
+    ax.set_title("Churn Rate by Contract Type (%)")
 
     for i, row in contract_churn.iterrows():
         ax.text(i, row['Churn']+0.02, f"{row['Churn']:.2%}", ha='center')
@@ -192,7 +188,8 @@ elif menu == 'Contract → Churn':
 # InternetService → Churn
 # ======================================================
 elif menu == 'InternetService → Churn':
-    st.title("📌 Internet Service 유형별 이탈률")
+    st.title("📌 Churn Rate by Internet Service Type")
+    st.caption("Internet Service 유형별 이탈률")
 
     internet_churn = (
         df.groupby('InternetService')['Churn']
@@ -205,7 +202,7 @@ elif menu == 'InternetService → Churn':
     ax.set_ylabel('Churn Rate (%)')
     ax.set_ylim(0, 1)
     ax.yaxis.set_major_formatter(PercentFormatter(1.0))
-    ax.set_title("서비스 유형별 고객 이탈률 (단위: %)")
+    ax.set_title("Churn Rate by Internet Service (%)")
 
     for i, row in internet_churn.iterrows():
         ax.text(i, row['Churn']+0.02, f"{row['Churn']:.2%}", ha='center')
@@ -221,12 +218,13 @@ elif menu == 'InternetService → Churn':
 # Tenure → Churn
 # ======================================================
 elif menu == 'Tenure → Churn':
-    st.title("📌 이용 기간(Tenure)별 이탈률")
+    st.title("📌 Churn Rate by Tenure Group")
+    st.caption("이용 기간(Tenure)별 이탈률")
 
     tenure_churn = (
         df.groupby('tenure_group')['Churn']
         .apply(lambda x: (x == 'Yes').mean())
-        .reindex(['0-5개월', '6-11개월', '12-23개월', '24개월 이상'])
+        .reindex(['0-5months', '6-11months', '12-23months', '24+ months'])
     )
 
     fig, ax = plt.subplots()
@@ -234,7 +232,7 @@ elif menu == 'Tenure → Churn':
     ax.set_ylabel('Churn Rate (%)')
     ax.set_ylim(0, 1)
     ax.yaxis.set_major_formatter(PercentFormatter(1.0))
-    ax.set_title("Tenure 그룹별 고객 이탈률 (단위: %)")
+    ax.set_title("Churn Rate by Tenure Group (%)")
 
     for i, val in enumerate(tenure_churn.values):
         ax.text(i, val+0.02, f"{val:.2%}", ha='center')
@@ -250,7 +248,8 @@ elif menu == 'Tenure → Churn':
 # Core Segment
 # ======================================================
 elif menu == 'Core Segment':
-    st.title("🔥 핵심 이탈 세그먼트 (Fiber optic 고객)")
+    st.title("🔥 Core Churn Segment (Fiber optic customers)")
+    st.caption("핵심 이탈 세그먼트 (Fiber optic 고객)")
     st.markdown("""
 ### 🔍 분석 흐름 (SQL 사고방식)
 - **WHERE** : Fiber optic 고객 필터링  
@@ -266,14 +265,14 @@ elif menu == 'Core Segment':
         index='Contract',
         columns='tenure_group',
         aggfunc=lambda x: (x == 'Yes').mean()
-    ).reindex(columns=['0-5개월','6-11개월','12-23개월','24개월 이상'])
+    ).reindex(columns=['0-5months','6-11months','12-23months','24+ months'])
 
     pivot_count = filtered.pivot_table(
         values='Churn',
         index='Contract',
         columns='tenure_group',
         aggfunc='count'
-    ).reindex(columns=['0-5개월','6-11개월','12-23개월','24개월 이상'])
+    ).reindex(columns=['0-5months','6-11months','12-23months','24+ months'])
 
     fig, ax = plt.subplots()
     cax = ax.imshow(pivot_rate.values, cmap='Reds', vmin=0, vmax=1)
@@ -290,7 +289,7 @@ elif menu == 'Core Segment':
             color = 'white' if rate > 0.5 else 'black'
             ax.text(j, i, f"{rate:.2%}\n({count}명)", ha='center', va='center', color=color)
 
-    ax.set_title("Fiber optic 고객: Contract × Tenure 그룹 이탈률 & 고객 수 (단위: %)")
+    ax.set_title("Fiber optic: Contract × Tenure Churn Rate & Customer Count (%)")
     fig.colorbar(cax, ax=ax, format=PercentFormatter(1.0))
     st.pyplot(fig)
 
@@ -304,13 +303,14 @@ elif menu == 'Core Segment':
 # Charges Analysis
 # ======================================================
 elif menu == 'Charges Analysis':
-    st.title("💰 매출 관점 고객 세그먼트 분석")
+    st.title("💰 Revenue Perspective Customer Analysis")
+    st.caption("매출 관점 고객 세그먼트 분석")
     st.caption("※ 본 분석은 EDA에서 관찰된 요금 패턴을 KPI 관점에서 재확인하는 목적임")
 
     tenure_order = ['0-5개월','6-11개월','12-23개월','24개월 이상']
     fig, ax = plt.subplots()
     colors = ['skyblue', 'salmon']
-    labels = ['잔류 고객 (No)', '이탈 고객 (Yes)']
+    labels = ['Retained (No)', 'Churned (Yes)']
 
     for i, churn_status in enumerate(['No','Yes']):
         subset = df[df['Churn']==churn_status]
@@ -322,7 +322,7 @@ elif menu == 'Charges Analysis':
     ax.set_xticks([x+0.1 for x in range(len(tenure_order))])
     ax.set_xticklabels(tenure_order)
     ax.set_ylabel("Monthly Charges ($)")
-    ax.set_title("Tenure 그룹별 월 요금 분포 (Churn 기준, 단위: $)")
+    ax.set_title("Monthly Charges by Tenure & Churn Status ($)")
 
     for color, label in zip(colors, labels):
         ax.plot([], [], color=color, label=label, linewidth=10)
