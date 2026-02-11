@@ -47,7 +47,7 @@ def load_data_from_mysql():
 # Load Data (CSV 배포용, 포폴용)
 # ======================================================
 # GitHub raw URL로 CSV 불러오기
-CSV_URL = "https://raw.githubusercontent.com/mars7421/churn_project/main/data/telco_churn.csv"
+CSV_URL = "https://raw.githubusercontent.com/mars7421/telco-churn-analysis/main/data/telco_churn.csv"
 
 @st.cache_data(ttl=0)
 def load_data():
