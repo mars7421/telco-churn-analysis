@@ -116,6 +116,27 @@ Streamlit 자동화 리포트
 > SQL KPI 분석 결과를 **모니터링·공유하기 위한 자동화 리포트**
   
 ---  
+
+### 3-4. Streamlit 대시보드 스크린샷
+아래는 CSV 기반 Streamlit 자동화 리포트 주요 화면입니다.  
+  
+#### Overview  
+![Overview](screenshots/dashboard_overview.png)  
+> 전체 KPI와 고객/이탈률 현황을 한눈에 확인
+  
+#### Core Segment (히트맵)  
+![Core Segment](screenshots/churn_heatmap.png)
+> Contract × Tenure × Fiber optic 기준 핵심 위험군 시각화 (이탈률 & 고객 수)  
+  
+#### Charges Analysis  
+![Charges Analysis](screenshots/charges_analysis.png)  
+> Tenure 그룹별 잔류/이탈 고객 월 요금 분포(Boxplot) 비교  
+  
+#### Insight  
+![Insight](screenshots/insight_actions.png)  
+> 분석 결과 기반 Action Item 요약 및 제안  
+  
+---  
   
 ## 4️⃣ 분석 결과 요약  
   
