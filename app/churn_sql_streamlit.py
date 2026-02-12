@@ -294,7 +294,7 @@ elif menu == 'Core Segment':
     fontsize=13,
     y=0.98
     )
-    
+
     fig.colorbar(cax, ax=ax, format=PercentFormatter(1.0), fraction=0.046, pad=0.04)
     st.pyplot(fig)
 
