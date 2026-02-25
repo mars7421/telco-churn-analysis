@@ -435,6 +435,23 @@ elif menu == 'Modeling':
         rf_metrics = get_metrics(y_test, y_pred_rf, y_proba_rf)
         bal_metrics = get_metrics(y_test, y_pred_bal, y_proba_bal)
 
+        # =========================
+        # Risk Segmentation
+        # =========================
+        result_df = X_test.copy()
+        result_df['Churn_Prob'] = y_proba_bal
+        result_df['Churn_Pred'] = y_pred_bal
+
+        def risk_group(p):
+            if p >= 0.7:
+                return "High Risk"
+            elif p >= 0.4:
+                return "Medium Risk"
+            else:
+                return "Low Risk"
+
+        result_df['Risk_Group'] = result_df['Churn_Prob'].apply(risk_group)
+
         return {
             'log': log_metrics,
             'rf': rf_metrics,
@@ -444,7 +461,8 @@ elif menu == 'Modeling':
                 'log': y_proba_log,
                 'rf': y_proba_rf,
                 'bal': y_proba_bal
-            }
+            },
+            'risk_df' : result_df
         }
 
     results = run_modeling(df)
@@ -491,6 +509,47 @@ elif menu == 'Modeling':
 ✅ Tuned Logistic 모델은 recall 향상으로 이탈 고객 탐지에 유리하며,  
    ROC-AUC 또한 baseline과 비슷해 모델 안정성 확인
 """)
+
+    # =========================
+    # Threshold 전략
+    # =========================
+    st.markdown("### 🎯 Threshold Strategy")
+
+    threshold_df = pd.DataFrame({
+    "Threshold": [0.5, 0.4, 0.3],
+    "Recall": [0.80, 0.87, 0.93],
+    "Precision": [0.49, 0.45, 0.41]
+})
+
+    st.dataframe(threshold_df)
+
+    st.markdown("""
+    - 기본 threshold(0.5)에서는 이탈 고객을 충분히 탐지하지 못함  
+    - threshold를 0.3으로 낮추면서 recall 개선 (≈0.93)  
+    - 일부 precision 감소 trade-off 존재  
+
+    👉 이탈 방지 관점에서 recall을 우선 기준으로 설정
+    """)
+
+    # =========================
+    # Risk Segmentation
+    # =========================
+    st.markdown("### 🚨 Customer Risk Segmentation")
+
+    risk_df = results['risk_df']
+    risk_counts = risk_df['Risk_Group'].value_counts()
+
+    col1, col2, col3 = st.columns(3)
+    col1.metric("High Risk", risk_counts.get("High Risk", 0))
+    col2.metric("Medium Risk", risk_counts.get("Medium Risk", 0))
+    col3.metric("Low Risk", risk_counts.get("Low Risk", 0))
+
+    st.bar_chart(risk_counts)
+
+    st.caption("""
+    - 예측 확률 기반 고객 위험군 분류  
+    - High Risk 고객 → 우선 유지 전략 대상
+    """)
 
 # ======================================================
 # Insight
