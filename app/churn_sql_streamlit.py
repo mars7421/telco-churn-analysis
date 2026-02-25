@@ -7,6 +7,10 @@ import os
 from sqlalchemy import create_engine
 from dotenv import load_dotenv
 import platform
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LogisticRegression
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score, classification_report, confusion_matrix, roc_auc_score, roc_curve
 
 # =========================
 # 폰트 설정 (Streamlit Cloud 한글 깨짐 이슈로 영어만 사용)
@@ -48,9 +52,9 @@ def load_data_from_mysql():
 # Load Data (CSV 배포용, 포폴용)
 # ======================================================
 # GitHub raw URL로 CSV 불러오기
-CSV_URL = "https://raw.githubusercontent.com/mars7421/telco-churn-analysis/main/data/telco_churn.csv"
+CSV_URL = "https://raw.githubusercontent.com/mars7421/telco-churn-analysis/main/data/cleaned_churn.csv"
 
-@st.cache_data(ttl=0)
+@st.cache_data(ttl=3600)
 def load_data():
     df = pd.read_csv(CSV_URL)
     # TotalCharges 숫자형 변환, 결측치 제거
@@ -99,12 +103,13 @@ st.sidebar.markdown("""
 
 **분석 흐름**  
 1️⃣ 계약 구조  
-2️⃣ 서비스 유형  
+2️⃣ 서비스 패턴  
 3️⃣ 이용 기간  
-4️⃣ 핵심 위험군 도출
+4️⃣ 위험군 정의
 
 **환경**
 - Linux  
+- jupyter Notebook  
 - MySQL 
 - Python / Streamlit
 """)
@@ -118,6 +123,7 @@ menu = st.sidebar.radio(
         'Tenure → Churn',
         'Core Segment',
         'Charges Analysis',
+        'Modeling',
         'Insight',
         'Appendix (SQL & Validation)'
     ]
@@ -347,6 +353,144 @@ elif menu == 'Charges Analysis':
 ➡ 장기 고객(24개월 이상): **잔류 고객 요금이 높아도 이탈률 낮음**
 """)
     st.markdown("**인사이트:** 초기 고객 요금 민감도 고려한 관리 필요")
+
+
+# ======================================================
+# Modeling
+# ======================================================
+elif menu == 'Modeling':
+    st.title("🤖 Churn Prediction Modeling")
+    st.caption("Logistic Regression / RandomForest 모델 성능 비교 + ROC Curve")
+
+    # =========================
+    # Modeling Pipeline
+    # =========================
+    @st.cache_resource
+    def run_modeling(df):
+
+        df_model = df.copy()
+        df_model = df_model.drop(columns=['customerID', 'tenure_group'])
+        df_model['Churn'] = df_model['Churn'].map({'Yes': 1, 'No': 0})
+
+        X = df_model.drop(columns=['Churn'])
+        y = df_model['Churn']
+
+        cat_cols = X.select_dtypes(include='object').columns
+        X_encoded = pd.get_dummies(X, columns=cat_cols, drop_first=True)
+
+        X_train, X_test, y_train, y_test = train_test_split(
+            X_encoded, y,
+            test_size=0.2,
+            random_state=42,
+            stratify=y
+        )
+
+        # =========================
+        # Logistic Regression
+        # =========================
+        log_model = LogisticRegression(max_iter=1000, random_state=42)
+        log_model.fit(X_train, y_train)
+
+        y_pred_log = log_model.predict(X_test)
+        y_proba_log = log_model.predict_proba(X_test)[:, 1]
+
+        # =========================
+        # RandomForest
+        # =========================
+        rf_model = RandomForestClassifier(
+            n_estimators=100,
+            random_state=42
+        )
+        rf_model.fit(X_train, y_train)
+
+        y_pred_rf = rf_model.predict(X_test)
+        y_proba_rf = rf_model.predict_proba(X_test)[:, 1]
+
+        # =========================
+        # Logistic (tuned)
+        # =========================
+        log_bal = LogisticRegression(
+            max_iter=1000,
+            class_weight='balanced',
+            random_state=42
+        )
+        log_bal.fit(X_train, y_train)
+
+        y_proba_bal = log_bal.predict_proba(X_test)[:, 1]
+        y_pred_bal = (y_proba_bal >= 0.3).astype(int)
+
+        # =========================
+        # Metrics
+        # =========================
+        def get_metrics(y_true, y_pred, y_proba):
+            report = classification_report(y_true, y_pred, output_dict=True)
+            return {
+                'accuracy': round(accuracy_score(y_true, y_pred), 2),
+                'recall': round(report['1']['recall'], 2),
+                'precision': round(report['1']['precision'], 2),
+                'roc_auc': round(roc_auc_score(y_true, y_proba), 2)
+            }
+
+        log_metrics = get_metrics(y_test, y_pred_log, y_proba_log)
+        rf_metrics = get_metrics(y_test, y_pred_rf, y_proba_rf)
+        bal_metrics = get_metrics(y_test, y_pred_bal, y_proba_bal)
+
+        return {
+            'log': log_metrics,
+            'rf': rf_metrics,
+            'bal': bal_metrics,
+            'roc': {
+                'y_test': y_test,
+                'log': y_proba_log,
+                'rf': y_proba_rf,
+                'bal': y_proba_bal
+            }
+        }
+
+    results = run_modeling(df)
+
+    # =========================
+    # 성능 비교 테이블
+    # =========================
+    st.markdown("### 📊 Model Performance Comparison")
+
+    perf_df = pd.DataFrame([
+        ['Logistic (baseline)', results['log']['accuracy'], results['log']['recall'], results['log']['precision'], results['log']['roc_auc']],
+        ['RandomForest', results['rf']['accuracy'], results['rf']['recall'], results['rf']['precision'], results['rf']['roc_auc']],
+        ['Logistic (tuned)', results['bal']['accuracy'], results['bal']['recall'], results['bal']['precision'], results['bal']['roc_auc']]
+    ], columns=['모델', 'Accuracy', 'Recall', 'Precision', 'ROC-AUC'])
+
+    st.dataframe(perf_df)
+
+    # =========================
+    # ROC Curve
+    # =========================
+    st.markdown("### 📈 ROC Curve Comparison")
+
+    y_test = results['roc']['y_test']
+
+    fpr_log, tpr_log, _ = roc_curve(y_test, results['roc']['log'])
+    fpr_rf, tpr_rf, _ = roc_curve(y_test, results['roc']['rf'])
+    fpr_bal, tpr_bal, _ = roc_curve(y_test, results['roc']['bal'])
+
+    fig, ax = plt.subplots()
+    ax.plot(fpr_log, tpr_log, label=f"Logistic (AUC={results['log']['roc_auc']:.2f})")
+    ax.plot(fpr_rf, tpr_rf, label=f"RandomForest (AUC={results['rf']['roc_auc']:.2f})")
+    ax.plot(fpr_bal, tpr_bal, label=f"Tuned Logistic (AUC={results['bal']['roc_auc']:.2f})")
+    ax.plot([0, 1], [0, 1], 'k--')
+
+    ax.set_xlabel("False Positive Rate")
+    ax.set_ylabel("True Positive Rate")
+    ax.set_title("ROC Curve")
+    ax.legend(loc='lower right')
+
+    st.pyplot(fig)
+
+    st.markdown("""
+✅ ROC Curve를 통해 모델별 분류 성능을 직관적으로 비교 가능  
+✅ Tuned Logistic 모델은 recall 향상으로 이탈 고객 탐지에 유리하며,  
+   ROC-AUC 또한 baseline과 비슷해 모델 안정성 확인
+""")
 
 # ======================================================
 # Insight
