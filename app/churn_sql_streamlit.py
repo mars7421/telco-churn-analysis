@@ -535,6 +535,7 @@ elif menu == 'Modeling':
     # Risk Segmentation
     # =========================
     st.markdown("### 🚨 Customer Risk Segmentation")
+    st.caption("예측 확률 기반 고객 위험군 분류")
 
     risk_df = results['risk_df']
     risk_counts = risk_df['Risk_Group'].value_counts()
@@ -546,9 +547,9 @@ elif menu == 'Modeling':
 
     st.bar_chart(risk_counts)
 
-    st.caption("""
-    - 예측 확률 기반 고객 위험군 분류  
-    - High Risk 고객 → 우선 유지 전략 대상
+    st.caption(""" 
+    - Risk Group별 고객 수 분포를 통해 관리 대상 규모 및 전략 우선순위 도출
+    - High Risk 고객군 규모를 기반으로 유지 전략(할인, 혜택 등) 우선 적용 가능
     """)
 
 # ======================================================
