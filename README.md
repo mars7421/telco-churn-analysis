@@ -116,17 +116,16 @@ Streamlit 자동화 리포트
 - Logistic Regression (class_weight + threshold tuning)  
   
 **📊 주요 결과**  
-```text
 | 모델                  | Accuracy | Recall | Precision | ROC-AUC |
 | ------------------- | -------- | ------ | --------- | ------- |
 | Logistic (baseline) | 0.80     | 0.57   | 0.65      | 0.83    |
 | RandomForest        | 0.79     | 0.52   | 0.63      | 0.81    |
 | Logistic (tuned)    | 0.63     | 0.93🔥 | 0.41      | 0.83    |  
-```  
+
 **🔥 핵심 해석**  
-- 기본 모델은 안정적인 정확도를 보였으나 **이탈 고객 탐지(recall)가 부족**
-- class_weight + threshold 조정을 통해
-  → **이탈 고객 탐지율 약 90% 이상으로 개선**
+- 기본 모델은 안정적인 정확도를 보였으나 **이탈 고객 탐지(recall) 부족**
+- class_weight + threshold 조정을 통해  
+  → **이탈 고객 탐지율 약 90% 이상으로 개선**  
 - Precision 감소는 존재하지만, **비즈니스 관점에서는 recall이 더 중요**  
   
 **🎯 최종 모델 전략**  
@@ -146,8 +145,8 @@ Streamlit 자동화 리포트
 ### 3-4. Streamlit 자동화 대시보드  
 `app/churn_sql_streamlit.py`  
   
-#### 🔍 구현 전략
-- **데이터 소스**
+**🔍 구현 전략**  
+- **데이터 소스**  
   - 기본 실행: CSV 기반 (재현성·안정성 확보)
   - 실무 확장: MySQL 연결 함수 구현 (미호출 상태 & 확장 가능)
 - **SQL 사고방식 기반 구성**
@@ -155,7 +154,7 @@ Streamlit 자동화 리포트
 - **분석 흐름 기반 UI 구성**
   - 계약 구조 → 서비스 패턴 → 이용 기간 → 위험군
   
-#### 주요 기능
+**주요 기능**  
 1. KPI Overview (전체 고객 수, 이탈률)
 2. Contract / InternetService / Tenure 별 이탈률
 3. 핵심 세그먼트 히트맵  
@@ -174,38 +173,37 @@ Streamlit 자동화 리포트
 ### 3-5. Streamlit 대시보드 스크린샷
 아래는 CSV 기반 Streamlit 자동화 리포트 주요 화면입니다.  
   
-#### Overview  
+**[Overview]**  
 ![Overview](screenshots/dashboard_overview.png)  
 > 전체 KPI와 고객/이탈률 현황을 한눈에 확인  
   
-#### Core Segment (히트맵)  
+**[Core Segment (히트맵)]**  
 ![Core Segment](screenshots/heatmap.png)  
 > Contract × Tenure × Fiber optic 기준 핵심 위험군 시각화, 위험 세그먼트 집중 확인   
   
-#### Charges Analysis  
+**[Charges Analysis]**  
 ![Charges Analysis](screenshots/charges_analysis.png)  
 > Tenure 그룹별 잔류/이탈 고객 월 요금 분포(Boxplot) 비교  
   
-#### Model Comparison  
+**[Model Comparison]**  
 ![Model Comparison](screenshots/model_comparison.png)  
 > 모델별 성능 지표를 비교하여 최적 모델 선정 근거 제시  
   
-#### Threshold Strategy  
+**[Threshold Strategy]**  
 ![Threshold Strategy](screenshots/Threshold_strategy.png)  
 > Threshold 조정을 통해 Recall-Precision trade-off를 비교하고, 이탈 탐지 기준을 비즈니스 관점에서 최적화  
   
-#### Risk Segment  
+**[Risk Segment]**  
 ![Risk Segment](screenshots/risk_segment.png)  
 > 이탈 확률 기반 고객을 Risk Group으로 분류하여 유지 전략 대상 및 우선순위 설정에 활용  
   
-#### Insight  
+**[Insight]**  
 ![Insight](screenshots/insight_actions.png)  
 > 분석 결과 기반 Action Item 요약 및 제안  
   
 ---  
   
 ## 4️⃣ 분석 결과 및 비즈니스 인사이트 
-```text
 | 구분    | 인사이트                  | 액션               |
 | ----- | --------------------- | ---------------- |
 | 초기 고객 | 0–5개월 이탈 집중           | 온보딩 프로그램 강화      |
@@ -213,7 +211,7 @@ Streamlit 자동화 리포트
 | 서비스   | Fiber optic 고객군 위험    | 품질 개선 / 가격 전략 검토 |
 | 요금    | 단기 고객 요금 민감           | 요금 구조 최적화        |
 | 모델링   | 고위험 고객 사전 탐지 가능       | 타겟 마케팅 적용        |
-```  
+
   
 ---  
   
@@ -253,6 +251,6 @@ streamlit run app/churn_sql_streamlit.py
 - `.env` 파일에 DB 접속 정보 설정
 - `load_data_from_mysql()` 함수 주석 해제 후 실행  
   
-  > 본 프로젝트는 **데이터 분석 → 머신러닝 → 서비스화 → 의사결정 연결**까지 수행하는
-  > 실무형 데이터 사이언스 프로젝트입니다. 
+> 본 프로젝트는 **데이터 분석 → 머신러닝 → 서비스화 → 의사결정 연결**까지 수행하는
+> 실무형 데이터 사이언스 프로젝트입니다. 
 
