@@ -671,7 +671,9 @@ SELECT
 FROM telco_churn
 WHERE InternetService = 'Fiber optic'
 GROUP BY Contract, tenure_group;
-🔹 KPI 정합성 검증
+```  
+  
+### 🔹 KPI 정합성 검증
 
 SQL 집계 결과와 Pandas 재계산 결과 비교
 
