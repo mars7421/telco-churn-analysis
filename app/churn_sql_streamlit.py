@@ -129,7 +129,7 @@ menu = st.sidebar.radio(
         'Core Segment',
         'Charges Analysis',
         'Modeling',
-        'Insight',
+        'Insights & Actions',
         'Appendix (SQL & Validation)'
     ]
 )
@@ -600,11 +600,11 @@ elif menu == 'Modeling':
 
 
 # ======================================================
-# Insight
+# Insights & Actions
 # ======================================================
-elif menu == 'Insight':
-    st.title("💡 최종 인사이트")
-    
+elif menu == 'Insights & Actions':
+    st.title("💡 최종 인사이트 및 비즈니스 액션")
+
     st.markdown("""
 ### 1. KPI 기반 이탈 구조 (SQL 분석)
 - 이탈은 **Month-to-month 계약 고객**에서 집중 발생
